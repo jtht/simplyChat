@@ -1,6 +1,4 @@
 (function () {
-  var URL = 'http://localhost:3000/';
-
   function setListeners(button, form) {
     button.addEventListener('click', function (event) {
       event.preventDefault();
@@ -23,7 +21,7 @@
       if (input.name) payload[input.name] = input.value;
     });
     handleResponse.form = form;
-    window.makeRequest(URL, payload, handleResponse);
+    window.makeRequest(HTTP_URL, payload, handleResponse);
   }
 
   function handleResponse(response) {
@@ -57,7 +55,7 @@
       }
     });
 
-    if (!errorOccured) window.location.replace(URL);
+    if (!errorOccured) window.location.replace(HTTP_URL);
   }
 
   function cleanUp(parent) {

@@ -1,6 +1,5 @@
 
 (function () {
-  var URL = 'http://localhost:3000';
   var WAIT_TIME = 800;
 
   var chatrooms = document.getElementById('chatroom-dialogs-container');
@@ -37,12 +36,12 @@
           newChatroomname: value,
           makeNewChatroom: false
         };
-        window.makeRequest(URL, payload, function (response) {
+        window.makeRequest(window.HTTP_URL, payload, function (response) {
           var status = response.status;
           var name = response.name;
 
           if (status === 'error') {
-            window.location.replace(URL);
+            window.location.replace(window.HTTP_URL);
           } else if (status === "name in use") {
             console.log('nafn er ekki í lagi');
           } else if (status === "name ok") {
@@ -63,7 +62,7 @@
         newChatroomname: input.value,
         makeNewChatroom: true
       };
-      window.makeRequest(URL, payload, function (response) {
+      window.makeRequest(HTTP_URL, payload, function (response) {
         var name = response.name;
         var owner = response.owner;
         input.remove();
@@ -173,7 +172,7 @@
         user: input.value
       }
 
-      window.makeRequest(URL, payload, function (response) {
+      window.makeRequest(HTTP_URL, payload, function (response) {
         var status = response.status;
         var OK = "notanda bætt við";
 

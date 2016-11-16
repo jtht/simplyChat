@@ -50,7 +50,7 @@
 
   function activateMessaging(ws) {
     if (ws) ws.close();
-    ws = new WebSocket('ws://localhost:3000');
+    ws = new WebSocket(window.WS_URL);
 
     ws.onopen = function () {
       console.log('open');
