@@ -1,0 +1,39 @@
+extends layout
+
+block css
+  link(rel='stylesheet', href='/stylesheets/styleIndex.css')
+
+block content
+  h1= title
+  p Velkominn á #{title}
+  a(href="#", data-toggle="modal", data-target="#myModal")
+    | Ný- og Innskráning
+  div(class="modal fade", id="myModal", tabindex="-1", role="dialog")
+    div(class="modal-dialog", role="document")
+      div(class="modal-content")
+        div(class="modal-body form-container")
+          div(class="form-signup")
+            h4.form-title Nýskráning
+            form#signup(method="post", action="/")
+              .form-group
+                input.form-control(type='text', placeholder='veldu notandanafn', name='username', maxlength=18)
+              .form-group
+                input.form-control(type='email', placeholder='tölvupóstur', name="email")
+              .form-group
+                input.form-control(type='password', placeholder='lykilorð', name='password')
+              .form-group
+                input.form-control(type='password', placeholder='staðfestu lykilorð', name='passwordConfirmation')
+              .flex-right
+                input#signupSubmit(class="btn btn-default", type="submit", value="Nýskrá")
+          div(class="form-login")
+            h4.form-title Innskráning
+            form#login(method="post", action="/")
+              .form-group
+                input.form-control(type='text', placeholder='notandanafn', name='username')
+              .form-group
+                input.form-control(type='password', placeholder='lykilorð', name='password')
+              .flex-right
+                input#loginSubmit(class="btn btn-default", type="submit", value="Innskrá")
+
+block scripts
+  script(src="/scripts/loginHandler.js")
