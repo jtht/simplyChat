@@ -1,217 +1,106 @@
-var sqlite3 = require('sqlite3').verbose();
-var _DB_NAME = 'simplyChat.db';
-var _TABLE_USER = "User";
-var _TABLE_CHAT_MESSAGE = "ChatMessage";
-var _TABLE_CHAT_ROOM = "ChatRoom"
-var _TABLE_USER_CHAT_ROOM = "UserChatRoom";
+var pg = require('pg');
 
-function _getDB() {
-  // Tímabundið function fyrir development.
-  var db = new sqlite3.Database(_DB_NAME);
+var TABLE_USER = "chatuser";
+var TABLE_CHAT_MESSAGE = "chatmessage";
+var TABLE_CHAT_ROOM = "chatroom"
+var TABLE_USER_CHAT_ROOM = "chatuserchatroom";
 
-  // TODO: Bæta við indexum í töflur eftir því hvernig fyrirspurnum
-  // verður háttað, not null, unique etc.
-  db.serialize(function () {
-    db.run("create table if not exists " + _TABLE_USER + "(\n" +
-             "\tname text primary key,\n" +
-             "\temail text,\n" +
-             "\tpasswordHash text,\n" +
-             "\tsessionID text\n" +
-           ");");
+// create a config to configure both pooling behavior
+// and client options
+// note: all config is optional and the environment variables
+// will be read if the config is not present
+var config = {
+  user: 'johannesthorkell', //env var: PGUSER
+  database: 'puppies',
+  host: 'localhost', // Server hosting the postgres database
+  port: 5432, //env var: PGPORT
+  max: 10, // max number of clients in the pool
+  idleTimeoutMillis: 1000, // how long a client is allowed to remain idle before being closed
+};
 
-    db.run("create table if not exists " + _TABLE_CHAT_ROOM + "(\n" +
-             "\tname text,\n" +
-             "\towner text,\n" +
-             "\tprimary key (name, owner),\n" +
-             "\tforeign key(owner) references " + _TABLE_USER + "(name)\n" +
-           ");");
-
-    db.run("create table if not exists " + _TABLE_CHAT_MESSAGE + "(\n" +
-             "\tcontent text,\n" +
-             "\towner text,\n" +
-             "\tchatroom text,\n" +
-             "\tchatroom_owner text,\n" +
-             "\tforeign key(owner) references " + _TABLE_USER + "(name),\n" +
-             "\tforeign key(chatroom, chatroom_owner) references " + _TABLE_CHAT_ROOM + "(name, owner)\n" +
-           ");");
-
-    db.run("create table if not exists " + _TABLE_USER_CHAT_ROOM + "(\n" +
-             "\tuser text,\n" +
-             "\tchatroom text,\n" +
-             "\tchatroom_owner text,\n" +
-             "\tprimary key (user, chatroom, chatroom_owner),\n" +
-             "\tforeign key(user) references " + _TABLE_USER + "(name),\n" +
-             "\tforeign key(chatroom, chatroom_owner) references " + _TABLE_CHAT_ROOM + "(name, owner)\n" +
-           ");");
-  });
-
-  return db;
-}
+var pool = new pg.Pool(config);
 
 function DBHelper() {}
 
+handleErr = function (err) {
+  if (err) console.log(err.message, err.stack);
+}
+
 DBHelper.prototype.insertMessage = function (msg) {
-  var db = _getDB();
-  db.run("insert into " + _TABLE_CHAT_MESSAGE + " values ((?), (?), (?), (?))",
-         msg.content, msg.owner, msg.chatroom, msg.chatroom_owner);
-  db.close();
+  pool.query("insert into " + TABLE_CHAT_MESSAGE + " values ($1, $2, $3, $4)",
+         [msg.content, msg.owner, msg.chatroom, msg.chatroom_owner], handleErr);
 }
 
 DBHelper.prototype.insertUser = function (user) {
-  var db = _getDB();
-  db.run("insert into " + _TABLE_USER + " values ((?), (?), (?), (?))",
-         user.name, user.email, user.passwordHash, user.sessionID);
-  db.close();
+  pool.query("insert into " + TABLE_USER + " values ($1, $2, $3, $4)",
+         [user.name, user.email, user.passwordHash, user.sessionID], handleErr);
 }
 
 DBHelper.prototype.updateSessionID = function (username, sessionID) {
-  var db = _getDB();
-  db.run("update " + _TABLE_USER + " set sessionID = (?) where name = (?)",
-         sessionID, username);
-  db.close();
-};
+  pool.query("update " + TABLE_USER + " set sessionID = $1 where name = $2",
+         [sessionID, username], handleErr);
+}
 
 DBHelper.prototype.clearSessionID = function (sessionID) {
-  var db = _getDB();
-  db.run("update " + _TABLE_USER + " set sessionID = '' where sessionID = (?)",
-         sessionID);
-  db.close();
+  pool.query("update " + TABLE_USER + " set sessionID = '' where sessionID = $1",
+         [sessionID], handleErr);
 }
 
 DBHelper.prototype.insertChatroom = function (chatroom) {
-  var db = _getDB();
-  db.serialize(function () {
-    db.run("insert into " + _TABLE_CHAT_ROOM + " values ((?), (?))",
-           chatroom.name, chatroom.owner);
+  pool.connect( function (err, client, release) {
+    if (err) return release(err);
 
-    db.run("insert into " + _TABLE_USER_CHAT_ROOM + " values ((?), (?), (?))",
-           chatroom.owner, chatroom.name, chatroom.owner);
+    client.query("insert into " + TABLE_CHAT_ROOM + " values ($1, $2)",
+               [chatroom.name, chatroom.owner], handleErr);
+
+    client.query("insert into " + TABLE_USER_CHAT_ROOM + " values ($2, $1, $2)",
+                [chatroom.name, chatroom.owner], function (err) {
+                  handleErr(err);
+                  release();
+                });
   });
-  db.close();
 }
 
 DBHelper.prototype.connectUserChatroom = function (data) {
-  var db = _getDB();
-  db.run("insert into " + _TABLE_USER_CHAT_ROOM + " values ((?), (?), (?))",
-         data.user, data.chatroom, data.chatroom_owner, function (err) {
-           console.log(err.code);
-         });
-  db.close();
-}
+  pool.query("insert into " + TABLE_USER_CHAT_ROOM + " values ($1, $2, $3)",
+         [data.user, data.chatroom, data.chatroom_owner], handleErr);
+ }
 
 DBHelper.prototype.usersOfChatroom = function (chatroom, chatroom_owner, callback) {
-  var db = _getDB();
-  db.all("select user from " + _TABLE_USER_CHAT_ROOM + " where" +
-         " chatroom = (?) and chatroom_owner = (?)",
-         chatroom, chatroom_owner, callback);
-  db.close();
+  pool.query("select user from " + TABLE_USER_CHAT_ROOM + " where " +
+             "chatroom = $1 and chatroom_owner = $2",
+             [chatroom, chatroom_owner], callback);
 }
 
-// klára breytingar
 DBHelper.prototype.messagesOfChatroom = function (chatroom, chatroom_owner, callback) {
-  var db = _getDB();
-  db.all("select content, owner from " + _TABLE_CHAT_MESSAGE + " where" +
-         " chatroom=(?) and chatroom_owner= (?)", chatroom, chatroom_owner, callback);
-  db.close();
+  pool.query("select content, owner from " + TABLE_CHAT_MESSAGE + " where " +
+             "chatroom=(?) and chatroom_owner= (?)",
+             [chatroom, chatroom_owner], callback);
 };
 
 DBHelper.prototype.chatroomsOfOwner = function (owner, callback) {
-  var db = _getDB();
-  db.all("select name from " + _TABLE_CHAT_ROOM + " where owner = (?)",
-         owner, callback);
-  db.close();
+  pool.query("select name from " + TABLE_CHAT_ROOM + " where owner = $1",
+             [owner], callback);
 };
 
 DBHelper.prototype.chatroomsOfUser = function (username, callback) {
-  var db = _getDB();
-  db.all("select * from " + _TABLE_USER_CHAT_ROOM + " where user = (?)",
-         username, callback);
-  db.close();
+  pool.query("select * from " + TABLE_USER_CHAT_ROOM + " where user = $1",
+             [username], callback);
 };
 
 DBHelper.prototype.userByName = function (name, callback) {
-  var db = _getDB();
-  db.get('select * from ' + _TABLE_USER + ' where name = (?)',
-         name, callback);
-  db.close();
+  pool.query('select * from ' + TABLE_USER + ' where name = $1',
+             [name], callback);
 };
 
 DBHelper.prototype.userByEmail = function (email, callback) {
-  var db = _getDB();
-  db.get('select * from ' + _TABLE_USER + ' where email = (?)',
-         email, callback);
-  db.close();
+  pool.query('select * from ' + TABLE_USER + ' where email = $1',
+             [email], callback);
 };
 
 DBHelper.prototype.userBySessionID = function (sessionID, callback) {
-  var db = _getDB();
-  db.get('select * from ' + _TABLE_USER + ' where sessionID = (?)',
-         sessionID, callback);
-  db.close();
+  pool.query('select * from ' + TABLE_USER + ' where sessionID = $1',
+             [sessionID], callback);
 };
 
-/**
- * Setur plat gögn í db svo hægt sé að testa forritið
- * Tímabundið fall fyrir development.
- */
-function _populateDummyData() {
-  var dummyMessageList = [
-    {content: "Hi morty", owner: "rick", chatroom: 1, chatroom_owner: 'rick'},
-    {content: "Hey rick", owner: "morty", chatroom: 1, chatroom_owner: 'rick'},
-    {content: "How's it going?", owner: "rick", chatroom: 1, chatroom_owner: 'rick'},
-    {content: "Not bad", owner: "morty", chatroom: 1, chatroom_owner: 'rick'},
-
-    {content: "I don't know what we're doing anymore jerry", owner: "beth", chatroom: 2, chatroom_owner: 'beth'},
-    {content: "But beth I still love you", owner: "jerry", chatroom: 2, chatroom_owner: 'beth'},
-    {content: "I don't know how I feel", owner: "beth", chatroom: 2, chatroom_owner: 'beth'},
-    {content: "...", owner: "jerry", chatroom: 2, chatroom_owner: 'beth'}
-  ];
-
-  var dummyUserList = [
-    {name: "rick", email: "rick@sanchez.com", password: "-", sessionID: "-"},
-    {name: "morty", email: "morty@smith.com", password: "-", sessionID: "-"},
-    {name: "beth", email: "beth@smith.com", password: "-", sessionID: "-"},
-    {name: "jerry", email: "jerry@smith.com", password: "-", sessionID: "-"}
-  ];
-
-  var dummyChatroomList = [
-    {name: 1, owner: "rick"},
-    {name: 2, owner: "beth"}
-  ];
-
-  var db = _getDB();
-
-  db.serialize(function () {
-    var stmt = db.prepare('insert into ' + _TABLE_USER + ' values ((?), (?), (?), (?))');
-    dummyUserList.forEach(function (user) {
-      stmt.run(user.name, user.email, user.password, user.sessionID);
-    });
-
-    stmt = db.prepare("insert into " + _TABLE_CHAT_MESSAGE + " values ((?), (?), (?), (?))");
-    dummyMessageList.forEach(function (msg) {
-      stmt.run(msg.content, msg.owner, msg.chatroom, msg.chatroom_owner);
-    });
-
-    var chatrooms = dummyChatroomList;
-    db.run("insert into " + _TABLE_CHAT_ROOM + " values ((?), (?))",
-           chatrooms[0].name, chatrooms[0].owner);
-
-    db.run("insert into " + _TABLE_USER_CHAT_ROOM + " values ((?), (?), (?))",
-           chatrooms[0].owner, chatrooms[0].name, chatrooms[0].owner);
-
-    db.run("insert into " + _TABLE_CHAT_ROOM + " values ((?), (?))",
-           chatrooms[1].name, chatrooms[1].owner);
-
-    db.run("insert into " + _TABLE_USER_CHAT_ROOM + " values ((?), (?), (?))",
-           chatrooms[1].owner, chatrooms[1].name, chatrooms[1].owner);
-
-    db.run("insert into " + _TABLE_USER_CHAT_ROOM + " values ((?), (?), (?))",
-           "morty", 1, chatrooms[0].owner);
-
-    db.run("insert into " + _TABLE_USER_CHAT_ROOM + " values ((?), (?), (?))",
-           "jerry", 2, chatrooms[1].owner);
-  });
-}
-
-// _populateDummyData();
 module.exports = DBHelper;
