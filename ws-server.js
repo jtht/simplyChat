@@ -23,10 +23,11 @@ exports.initWebSocketServer = function(server) {
             crInfo: {cr: cr, crOwner: crOwner}
           };
           ACTIVE_USERS[user.name] = activeUserInfo;
-          dbHelper.messagesOfChatroom(cr, crOwner, function (err, rows) {
+          dbHelper.messagesOfChatroom(cr, crOwner, function (err, result) {
+            var rows = result.rows;
             rows.forEach(function (row) {
               var reply = {
-                sender: row.owner,
+                sender: row.sender,
                 recipient: user.name,
                 content: row.content
               }
@@ -34,18 +35,19 @@ exports.initWebSocketServer = function(server) {
             });
           });
         } else {
-          msg.owner = user.name;
+          msg.sender = user.name;
           dbHelper.insertMessage(msg);
 
-          dbHelper.usersOfChatroom(cr, crOwner, function (err, rows) {
+          dbHelper.usersOfChatroom(cr, crOwner, function (err, result) {
+            var rows = result.rows;
             rows.forEach(function (row) {
-              var client = ACTIVE_USERS[row.user];
+              var client = ACTIVE_USERS[row.chatuser];
               if (client) {
                 var inChatroom = client.crInfo.cr === cr && client.crInfo.crOwner === crOwner;
                 if (inChatroom) {
                   var reply = {
                     sender: user.name,
-                    recipient: row.user,
+                    recipient: row.chatuser,
                     content: msg.content
                   }
                   client.socket.send(JSON.stringify(reply));

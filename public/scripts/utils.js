@@ -16,8 +16,8 @@
     request.send(JSON.stringify(payload));
   }
 
-  var domainName = 'localhost:5000' //'desolate-citadel-11212.herokuapp.com/';
-  window.HTTP_URL = 'http://' + domainName;
-  window.WS_URL = 'ws://' + domainName;
+  var domainName = 'desolate-citadel-11212.herokuapp.com/';
+  window.HTTP_URL = 'https://' + domainName;
+  window.WS_URL = 'wss://' + domainName;
   window.makeRequest = makeRequest;
 })(window);

@@ -28,7 +28,7 @@ handleErr = function (err) {
 
 DBHelper.prototype.insertMessage = function (msg) {
   pool.query("insert into " + TABLE_CHAT_MESSAGE + " values ($1, $2, $3, $4)",
-         [msg.content, msg.owner, msg.chatroom, msg.chatroom_owner], handleErr);
+         [msg.content, msg.sender, msg.chatroom, msg.chatroom_owner], handleErr);
 }
 
 DBHelper.prototype.insertUser = function (user) {
@@ -36,9 +36,9 @@ DBHelper.prototype.insertUser = function (user) {
          [user.name, user.email, user.passwordHash, user.sessionID], handleErr);
 }
 
-DBHelper.prototype.updateSessionID = function (username, sessionID) {
+DBHelper.prototype.updateSessionID = function (username, sessionID, cb) {
   pool.query("update " + TABLE_USER + " set sessionID = $1 where name = $2",
-         [sessionID, username], handleErr);
+         [sessionID, username], cb);
 }
 
 DBHelper.prototype.clearSessionID = function (sessionID) {
@@ -67,14 +67,14 @@ DBHelper.prototype.connectUserChatroom = function (data) {
  }
 
 DBHelper.prototype.usersOfChatroom = function (chatroom, chatroom_owner, callback) {
-  pool.query("select user from " + TABLE_USER_CHAT_ROOM + " where " +
+  pool.query("select chatuser from " + TABLE_USER_CHAT_ROOM + " where " +
              "chatroom = $1 and chatroom_owner = $2",
              [chatroom, chatroom_owner], callback);
 }
 
 DBHelper.prototype.messagesOfChatroom = function (chatroom, chatroom_owner, callback) {
-  pool.query("select content, owner from " + TABLE_CHAT_MESSAGE + " where " +
-             "chatroom=(?) and chatroom_owner= (?)",
+  pool.query("select content, sender from " + TABLE_CHAT_MESSAGE + " where " +
+             "chatroom = $1 and chatroom_owner = $2",
              [chatroom, chatroom_owner], callback);
 };
 
@@ -84,7 +84,7 @@ DBHelper.prototype.chatroomsOfOwner = function (owner, callback) {
 };
 
 DBHelper.prototype.chatroomsOfUser = function (username, callback) {
-  pool.query("select * from " + TABLE_USER_CHAT_ROOM + " where user = $1",
+  pool.query("select * from " + TABLE_USER_CHAT_ROOM + " where chatuser = $1",
              [username], callback);
 };
 

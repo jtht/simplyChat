@@ -26,13 +26,16 @@ function verifyUser(info, res) {
     response['password'] = pwError;
     response['passwordConfirmation'] = pwcError;
     if (!nameError) {
-      dbHelper.userByName(name, function (err, row) {
+      dbHelper.userByName(name, function (err, result) {
+        var row = result.rows[0];
+        console.log(row);
         if (row) {
           response['username'] = "notandanafn er í notkun";
         }
 
         if (!emailError) {
-          dbHelper.userByEmail(email, function (err, row) {
+          dbHelper.userByEmail(email, function (err, result) {
+            var row = result.rows[0];
             if (row) {
               response['email'] = "email í notkun";
             }
@@ -52,7 +55,8 @@ function verifyUser(info, res) {
         }
       });
     } else if (!emailError) {
-      dbHelper.userByEmail(email, function (err, row) {
+      dbHelper.userByEmail(email, function (err, result) {
+        var row = result.rows[0];
         if (row) {
           response['email'] = "email í notkun";
         }
@@ -62,14 +66,15 @@ function verifyUser(info, res) {
       res.json(response);
     }
   } else if (info.type === 'login') {
-    dbHelper.userByName(name, function (err, row) {
-      if (row && security.checkPassword(info.password, row.passwordHash)) {
-        loginUser(res, dbHelper, row.name);
+    dbHelper.userByName(name, function (err, result) {
+      var row = result.rows[0];
+      if (row && security.checkPassword(info.password, row.passwordhash)) {
         response['password'] = '';
+        loginUser(res, dbHelper, row.name, response);
       } else {
         response['password'] = 'rangt lykilorð/notandanafn';
+        res.json(response);
       }
-      res.json(response);
     });
   } else {
     response.status = 'error';
@@ -163,9 +168,12 @@ function createNewUser(res, info) {
  * @param  {object} dbHelper tenging við gagnagrunn
  * @param  {string} username nafn notanda
  */
-function loginUser(res, dbHelper, username) {
+function loginUser(res, dbHelper, username, response) {
   var sessionID = setNewSessionID(res);
-  dbHelper.updateSessionID(username, sessionID);
+  dbHelper.updateSessionID(username, sessionID, function (err) {
+    if (err) console.log(err.message, err.stack);
+    else res.json(response);
+  });
 }
 
 /**
@@ -210,8 +218,9 @@ function userLoggedIn(userInfo, cbTrue, cbFalse) {
   if (!sessionID) { cbFalse(); return; }
 
   var dbHelper = new DBHelper();
-  dbHelper.userBySessionID(sessionID, function (err, row) {
-    if (row && row.sessionID && row.sessionID === sessionID) {
+  dbHelper.userBySessionID(sessionID, function (err, result) {
+    var row = result.rows[0];
+    if (row && row.sessionid && row.sessionid === sessionID) {
       cbTrue(row);
     } else {
       cbFalse();

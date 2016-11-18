@@ -6,10 +6,12 @@ var validation = require('../validation');
 
 router.get('/', validation.logoutUser);
 router.get('/', function (req, res, next) {
+  console.log(req.cookies.sessionID);
   validation.userLoggedIn(req.cookies, function (row) {
     var username = row.name;
     var dbHelper = new DBHelper();
-    dbHelper.chatroomsOfUser(username, function (err, rows) {
+    dbHelper.chatroomsOfUser(username, function (err, result) {
+      var rows = result.rows;
       res.render('chat', {rows: rows});
     });
   }, next);
@@ -32,7 +34,8 @@ router.post('/', function (req, res, next) {
       var shouldMakeCr = req.body.makeNewChatroom;
       response.name = crName;
 
-      dbHelper.chatroomsOfOwner(owner, function (err, rows) {
+      dbHelper.chatroomsOfOwner(owner, function (err, result) {
+        var rows = result.rows;
         var chatroom = rows.find( o => o.name === crName)
         if (!chatroom) {
           if (shouldMakeCr) {
@@ -63,12 +66,14 @@ router.post('/', function (req, res, next) {
         return;
       }
 
-      dbHelper.userByName(userToAdd, function (err, row) {
+      dbHelper.userByName(userToAdd, function (err, result) {
+        var row = result.rows[0];
         if (!row) {
           response.status = "notandi ekki til";
           res.json(response);
         } else {
-          dbHelper.chatroomsOfOwner(owner, function (err, rows) {
+          dbHelper.chatroomsOfOwner(owner, function (err, result) {
+            var rows = result.rows;
             var chatroom = rows.find( o => o.name === chatroomName);
             if (chatroom) {
               var data = {};
