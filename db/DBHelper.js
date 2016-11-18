@@ -1,22 +1,35 @@
 var pg = require('pg');
+var url = require('url')
 
 var TABLE_USER = "chatuser";
 var TABLE_CHAT_MESSAGE = "chatmessage";
 var TABLE_CHAT_ROOM = "chatroom"
 var TABLE_USER_CHAT_ROOM = "chatuserchatroom";
 
-// create a config to configure both pooling behavior
-// and client options
-// note: all config is optional and the environment variables
-// will be read if the config is not present
+var params = url.parse(process.env.DATABASE_URL);
+var auth = params.auth.split(':');
+
 var config = {
-  user: 'johannesthorkell', //env var: PGUSER
-  database: 'puppies',
-  host: 'localhost', // Server hosting the postgres database
-  port: 5432, //env var: PGPORT
-  max: 10, // max number of clients in the pool
-  idleTimeoutMillis: 1000, // how long a client is allowed to remain idle before being closed
+  user: auth[0],
+  password: auth[1],
+  host: params.hostname,
+  port: params.port,
+  database: params.pathname.split('/')[1],
+  ssl: true,
+  max: 20, //set pool max size to 20
+  min: 4, //set min pool size to 4
+  idleTimeoutMillis: 1000 //close idle clients after 1 second
 };
+
+// local stillingar
+// var config = {
+//   user: 'johannesthorkell', //env var: PGUSER
+//   database: 'puppies',
+//   host: 'localhost', // Server hosting the postgres database
+//   port: 5432, //env var: PGPORT
+//   max: 10, // max number of clients in the pool
+//   idleTimeoutMillis: 1000, // how long a client is allowed to remain idle before being closed
+// };
 
 var pool = new pg.Pool(config);
 
