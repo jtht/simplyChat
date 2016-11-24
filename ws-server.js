@@ -40,6 +40,7 @@ exports.initWebSocketServer = function(server) {
 
           dbHelper.usersOfChatroom(cr, crOwner, function (err, result) {
             var rows = result.rows;
+            console.log(rows);
             rows.forEach(function (row) {
               var client = ACTIVE_USERS[row.chatuser];
               if (client) {

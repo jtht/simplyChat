@@ -7,12 +7,12 @@
   var localHTTP = 'http://' + localDomain;
   var localWS = 'ws://' + localDomain;
 
-  window.HTTP_URL = localHTTP;
-  window.WS_URL = localWS;
+  window.HTTP_URL = remoteHTTP;
+  window.WS_URL = remoteWS;
 
   function makeRequest(url, payload, handleResponse) {
     var request = new XMLHttpRequest();
-    request.onload = function () {
+    request.onload = function() {
       if (request.status === 200) {
         var response = JSON.parse(request.responseText);
         handleResponse(response);

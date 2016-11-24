@@ -27,6 +27,7 @@ function verifyUser(info, res) {
     response['passwordConfirmation'] = pwcError;
     if (!nameError) {
       dbHelper.userByName(name, function (err, result) {
+        if (err) return console.log(err);
         var row = result.rows[0];
         console.log(row);
         if (row) {
@@ -219,6 +220,7 @@ function userLoggedIn(userInfo, cbTrue, cbFalse) {
 
   var dbHelper = new DBHelper();
   dbHelper.userBySessionID(sessionID, function (err, result) {
+    if (err) return console.log(err);
     var row = result.rows[0];
     if (row && row.sessionid && row.sessionid === sessionID) {
       cbTrue(row);

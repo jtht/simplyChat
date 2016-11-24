@@ -1,5 +1,5 @@
 var pg = require('pg');
-var config = require('../localDbConfig');
+var config = require('../remoteDbConfig');
 
 var TABLE_USER = "chatuser";
 var TABLE_CHAT_MESSAGE = "chatmessage";
