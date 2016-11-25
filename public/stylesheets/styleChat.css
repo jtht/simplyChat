@@ -5,19 +5,20 @@
 html, body {
   height: 100%;
   width: 100%;
-  min-height: 600px;
+  min-height: 640px;
 }
 
 .body-container {
-  height: 100%;
-  width: 100%;
+  min-height: 100%;
+  min-width: 100%;
   display: flex;
   flex-flow: column;
 }
 
 header {
   flex: 1 1 0;
-  background-color: red;
+
+  background: linear-gradient(to bottom, rgba(102,102,102,1) 0%,rgba(214,214,214,0.5) 100%);
 }
 
 footer {
@@ -28,6 +29,7 @@ footer {
 main {
   flex: 6 1 0;
   display: flex;
+  overflow-y: scroll;
 }
 
 /* css fyrir chatrooms */
@@ -60,56 +62,69 @@ main {
 }
 
 .add-chatroom-dialog {
-  position: relative;
-  background-color: white;
-  color: #00BFFF;
-  border: 1px solid #00BFFF;
-  display: block;
   width: 100px;
   height: 100px;
+}
+
+.round-button {
+  background-color: white;
+  color: #00BFFF;
+  border: 2px solid #00BFFF;
+  display: block;
   border-radius: 100%;
   transition: border 0.5s, color 0.5s;
 }
 
-.add-chatroom-dialog:hover {
-  border: 1px solid #009DD1;
+.round-button:hover {
+  border: 2px solid #009DD1;
   color: #009DD1;
 }
 
-.add-chatroom-dialog:focus {
+.round-button:focus {
   outline: 0;
 }
 
 .chat-container {
   flex:3 1 0;
-  background-color: blue;
+  background-color: white;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0 20px;
 }
 
 .chat-title-container {
   display: flex;
-  height: 20px;
+  height: 50px;
   position: relative;
   justify-content: space-between;
-  background-color: chocolate;
+  align-items: center;
+  border-bottom: 1px solid #ADB7BA;
+  background-color: white;
 }
 
 .chat-title {
-  margin: 0;
+  font-family: 'Raleway', sans-serif;
+  font-size: 28px;
   padding-left: 10px;
 }
 
-.chat-options {
+.chat-options-container {
   padding-right: 10px;
-  cursor: pointer;
+  display: flex;
+}
+
+.option-add-user {
+  width: 45px;
+  height: 45px;
+  background: url('/images/add_user.jpg') no-repeat;
+  background-size: contain;
 }
 
 .chat-options-menu {
   position: absolute;
   right: 0;
-  top: 20px;
+  top: 50px;
   background-color: pink;
   padding: 5px;
 }
@@ -130,17 +145,23 @@ main {
   margin-top: 5px;
 }
 
+.chat-window-container {
+  background-color: white;
+  margin: 0;
+  padding: 0;
+}
+
 .chat-window {
-  background-color: yellow;
+  background-color: white;
   width: 640px;
-  height: 350px;
+  height: 320px;
   overflow-y: scroll;
 }
 
 .chat-message-line {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 10px;
+  margin: 5px 0;
   padding: 0 10px;
 }
 
@@ -151,4 +172,18 @@ main {
 
 .chat-message-title {
   margin-bottom: 5px;
+}
+
+.chat-message-input {
+  width: 620px;
+  resize: none;
+  border: 0;
+  border-top: 1px solid #00BFFF;
+  padding-top: 2px;
+  margin: 0 10px;
+}
+
+.chat-message-input:focus {
+  outline-offset: 0;
+  outline: 0;
 }

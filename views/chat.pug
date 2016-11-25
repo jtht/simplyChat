@@ -1,6 +1,7 @@
 extends layout
 
 block css
+  link(href="https://fonts.googleapis.com/css?family=Raleway", rel="stylesheet")
   link(rel='stylesheet', href='/stylesheets/styleChat.css')
 
 block content
@@ -9,7 +10,7 @@ block content
       nav
     main
       .chatroom-dialogs-container#chatroom-dialogs-container
-        button.add-chatroom-dialog#add-chatroom-dialog bæta við spjallherbergi
+        button.add-chatroom-dialog.round-button#add-chatroom-dialog bæta við spjallherbergi
         each val in rows
           if val.chatuser === val.chatroom_owner
             .chatroom-dialog.chatroom-dialog-owner(data-name=val.chatroom, data-owner=val.chatroom_owner)

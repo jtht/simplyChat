@@ -1,14 +1,19 @@
 (function (window) {
-  var remoteDOMAIN = 'desolate-citadel-11212.herokuapp.com/';
-  var remoteHTTP = 'https://' + remoteDOMAIN;
-  var remoteWS = 'wss://' + remoteDOMAIN;
+  var LOCAL = 'local';
+  var REMOTE = 'remote';
 
-  var localDomain = 'localhost:3000';
-  var localHTTP = 'http://' + localDomain;
-  var localWS = 'ws://' + localDomain;
+  function setHost(loc) {
+    var REMOTE_DOMAIN = 'desolate-citadel-11212.herokuapp.com/';
+    var REMOTE_HTTP = 'https://' + REMOTE_DOMAIN;
+    var REMOTE_WS = 'wss://' + REMOTE_DOMAIN;
 
-  window.HTTP_URL = remoteHTTP;
-  window.WS_URL = remoteWS;
+    var LOCAL_DOMAIN = 'localhost:3000';
+    var LOCAL_HTTP = 'http://' + LOCAL_DOMAIN;
+    var LOCAL_WS = 'ws://' + LOCAL_DOMAIN;
+
+    window.HTTP_URL = loc === LOCAL ? LOCAL_HTTP : REMOTE_HTTP;
+    window.WS_URL = loc === LOCAL ? LOCAL_WS : LOCAL_WS;
+  }
 
   function makeRequest(url, payload, handleResponse) {
     var request = new XMLHttpRequest();
@@ -25,5 +30,6 @@
     request.send(JSON.stringify(payload));
   }
 
+  setHost(LOCAL);
   window.makeRequest = makeRequest;
 })(window);

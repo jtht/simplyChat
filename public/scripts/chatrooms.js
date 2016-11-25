@@ -1,4 +1,4 @@
-
+//
 (function () {
   var WAIT_TIME = 800;
 
@@ -103,16 +103,14 @@
     chatTitleContainer.classList.add('chat-title-container');
 
     var crName = chatroom.name;
-    var chatTitle = document.createElement('h4');
+    var chatTitle = document.createElement('div');
     chatTitle.classList.add('chat-title');
     chatTitle.textContent = crName;
 
     var chatOptionsMenu = createOptionsMenu(chatroom);
-
-    var chatOptions = document.createElement('span');
-    chatOptions.classList.add('chat-options');
-    chatOptions.textContent = 'bæta notanda í spjallherbergi';
-    chatOptions.addEventListener('click', function () {
+    var optionAddUser = document.createElement('button');
+    optionAddUser.classList.add('option-add-user', 'round-button');
+    optionAddUser.addEventListener('click', function () {
       if (chatOptionsMenu.style.display === 'none') {
         chatOptionsMenu.style.display = 'block';
       } else {
@@ -120,32 +118,30 @@
       }
     });
 
+    var chatOptions = document.createElement('div');
+    chatOptions.classList.add('chat-options-container');
+
     var chatWindow = document.createElement('div');
     chatWindow.classList.add('chat-window');
     chatWindow.id = 'chat-window';
 
-    var chatMsgContainer = document.createElement('div');
-    chatMsgContainer.id = 'chat-message-container';
-
-    var input = document.createElement('input');
-    input.type = 'text';
+    var input = document.createElement('textarea');
     input.id = 'chat-message-input';
+    input.classList.add('chat-message-input');
+    input.placeholder = 'Skrifaðu skilboð hér...';
     input.dataset.chatroomName = crName;
     input.dataset.chatroomOwner = chatroom.owner;
 
-    var button = document.createElement('button')
-    button.id = 'chat-send-message-button';
-    button.textContent = 'senda';
-
+    chatOptions.appendChild(optionAddUser);
     chatTitleContainer.appendChild(chatTitle);
     chatTitleContainer.appendChild(chatOptions);
     chatTitleContainer.appendChild(chatOptionsMenu);
-    chatMsgContainer.appendChild(input);
-    chatMsgContainer.appendChild(button);
     chatWindowContainer.appendChild(chatTitleContainer);
     chatWindowContainer.appendChild(chatWindow);
-    chatWindowContainer.appendChild(chatMsgContainer);
+    chatWindowContainer.appendChild(input);
     chatContainer.appendChild(chatWindowContainer);
+
+    input.focus();
   }
 
   function createOptionsMenu(chatroom) {

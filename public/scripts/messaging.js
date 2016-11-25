@@ -65,17 +65,16 @@
       addReplyToChat(reply);
     }
 
-    var button = document.getElementById('chat-send-message-button');
     var input = document.getElementById('chat-message-input');
-
-    button.addEventListener('click', function (event) {
+    input.addEventListener('keydown', function (event) {
+      if (event.keyCode !== 13) return;
       event.preventDefault();
       var content = input.value;
       input.value = "";
       msg = assembleMsg();
       msg.content = content;
       ws.send(JSON.stringify(msg));
-    });
+    })
   }
 
   window.activateMessaging = activateMessaging;

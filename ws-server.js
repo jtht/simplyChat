@@ -54,7 +54,7 @@ exports.initWebSocketServer = function(server) {
                   client.socket.send(JSON.stringify(reply));
                 }
               }
-            })
+            });
           });
         }
       }, () => console.log('cbFalse kallað á socket connect!!!'));
