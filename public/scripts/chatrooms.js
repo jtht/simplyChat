@@ -89,6 +89,7 @@ var valmynd;
         var status = response.status;
         if (status) {
           errorDiv = document.createElement('div');
+          errorDiv.classList.add('error');
           errorDiv.textContent = status;
           chatroomDialog.appendChild(errorDiv);
         } else {
@@ -180,7 +181,7 @@ var valmynd;
     menu.classList.add('chat-options-menu');
 
     var menuContainer = document.createElement('div');
-    menuContainer.classList.add('arrow_box');
+    menuContainer.classList.add('arrow_box', 'chat-options-menu-container');
 
     var info = document.createElement('div');
     info.textContent = 'bættu við notanda';
@@ -188,12 +189,14 @@ var valmynd;
 
     var input = document.createElement('input');
     input.type = 'text';
-    input.placeholder = 'heiti notanda';
+    input.placeholder = 'notandanafn';
     input.setAttribute('maxlength', '18');
+    input.classList.add('form-control', 'chat-options-menu-input');
 
     var buttonDiv = document.createElement('div');
     var button = document.createElement('button');
-    button.textContent = 'senda';
+    button.textContent = 'bæta við';
+    button.classList.add('btn', 'btn-sm', 'chat-options-menu-button');
     button.addEventListener('click', function () {
       var payload = {
         chatroom: chatroom.name,
@@ -206,6 +209,7 @@ var valmynd;
         var OK = "notanda bætt við";
 
         info.textContent = status;
+        info.classList.remove('success', 'error');
         info.classList.add(status === OK ? 'success' : 'error');
       });
     });
