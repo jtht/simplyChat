@@ -59,7 +59,7 @@
       isSameSender = lastMsg.dataset.sender === reply.sender;
     }
 
-    if (delta <= 10000 && isSameSender) {
+    if (delta <= 30000 && isSameSender) {
       msgLine.classList.add('no-avatar');
       lastMsgContainer.appendChild(msgLine);
     } else {

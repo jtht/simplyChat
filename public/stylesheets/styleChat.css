@@ -41,7 +41,7 @@ main {
 }
 
 .fit-in-dialogs-container {
-  padding: 11px 15px;
+  padding: 10px 15px;
 }
 
 .dialogs-container-title {
@@ -108,14 +108,13 @@ main {
   color: #00BFFF;
   border: 2px solid #FFFFFF;
   display: block;
-  border-radius: 0;
-  transition: border 1.0s, color 1.0s, border-radius 1.0s;
+  border-radius: 100%;
+  transition: border 3.0s, color 3.0s;
   transition-timing-function: ease-in-out;
 }
 
-.round-button:hover {
+.round-button:hover, .round-button.border {
   border: 2px solid #009DD1;
-  border-radius: 100%;
   color: #009DD1;
 }
 
@@ -167,9 +166,7 @@ main {
 .chat-options-menu {
   position: absolute;
   right: 0;
-  top: 50px;
-  background-color: pink;
-  padding: 5px;
+  top: 54px;
 }
 
 .chat-options-info {
@@ -184,9 +181,9 @@ main {
   color: green;
 }
 
-.chat-options-menu > * {
+/*.chat-options-menu > * {
   margin-top: 5px;
-}
+}*/
 
 /**
  * CHATROOM WINDOW
@@ -200,6 +197,7 @@ main {
   height: 90%;
   min-width: 640px;
   max-width: 950px;
+  font-size: 1.1em;
 }
 
 .chat-window {
@@ -286,4 +284,33 @@ main {
 .chat-message-recipient {
   justify-content: flex-start;
   flex-flow: column;
+}
+
+.arrow_box {
+	position: relative;
+	background: #009DD1;
+	border: 1px solid #c2e1f5;
+}
+.arrow_box:after, .arrow_box:before {
+	bottom: 100%;
+	left: 75%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.arrow_box:after {
+	border-color: rgba(0, 157, 209, 0);
+	border-bottom-color: #009DD1;
+	border-width: 10px;
+	margin-left: -10px;
+}
+.arrow_box:before {
+	border-color: rgba(194, 225, 245, 0);
+	border-bottom-color: #c2e1f5;
+	border-width: 11px;
+	margin-left: -11px;
 }

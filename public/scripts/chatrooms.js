@@ -1,4 +1,5 @@
 //
+var valmynd;
 (function () {
   var WAIT_TIME = 800;
 
@@ -134,13 +135,16 @@
     chatTitle.classList.add('chat-title');
     chatTitle.textContent = crName;
 
-    var chatOptionsMenu = createOptionsMenu(chatroom);
     var optionAddUser = document.createElement('button');
+    var chatOptionsMenu = createOptionsMenu(chatroom, optionAddUser);
     optionAddUser.classList.add('option-add-user', 'round-button');
-    optionAddUser.addEventListener('click', function () {
+    optionAddUser.addEventListener('click', function (event) {
+      event.stopPropagation();
       if (chatOptionsMenu.style.display === 'none') {
+        optionAddUser.classList.add('border');
         chatOptionsMenu.style.display = 'block';
       } else {
+        optionAddUser.classList.remove('border');
         chatOptionsMenu.style.display = 'none';
       }
     });
@@ -171,9 +175,12 @@
     input.focus();
   }
 
-  function createOptionsMenu(chatroom) {
+  function createOptionsMenu(chatroom, optionAddUser) {
     var menu = document.createElement('div');
     menu.classList.add('chat-options-menu');
+
+    var menuContainer = document.createElement('div');
+    menuContainer.classList.add('arrow_box');
 
     var info = document.createElement('div');
     info.textContent = 'bættu við notanda';
@@ -181,7 +188,7 @@
 
     var input = document.createElement('input');
     input.type = 'text';
-    input.placeholder = 'nafn/email notanda';
+    input.placeholder = 'heiti notanda';
     input.setAttribute('maxlength', '18');
 
     var buttonDiv = document.createElement('div');
@@ -204,17 +211,22 @@
     });
 
     buttonDiv.appendChild(button);
-    menu.appendChild(info);
-    menu.appendChild(input);
-    menu.appendChild(buttonDiv);
+    menuContainer.appendChild(info);
+    menuContainer.appendChild(input);
+    menuContainer.appendChild(buttonDiv);
+    menu.appendChild(menuContainer);
     menu.style.display = 'none';
 
-    document.body.onclick = function (event) {
-      var menu = document.querySelector('.chat-options-menu');
-      if (!menu) return;
-      if (event.target === menu) menu.style.display = 'none';
-    }
+    var insideMenu = false;
+    menu.addEventListener('mouseenter', event => insideMenu = true);
+    menu.addEventListener('mouseleave', event => insideMenu = false);
 
+    document.body.onclick = function() {
+      if (!insideMenu) {
+        menu.style.display = 'none';
+        optionAddUser.classList.remove('border');
+      }
+    }
     return menu;
   }
 
