@@ -11,77 +11,106 @@
   });
 
   function createChatroomDialog(input) {
+    var chatroomDialog = document.createElement('div');
+    chatroomDialog.classList.add('chatroom-dialog', 'fit-in-dialogs-container');
+
+    var chatroomDialogOwner = document.createElement('div');
+    chatroomDialogOwner.classList.add('chatroom-dialog-owner');
+
+    var containerSpan = document.createElement('span');
+
+    var usersIcon = document.createElement('span');
+    usersIcon.classList.add('fa', 'fa-users', 'dialog-icon');
+
+    var ownerIcon = document.createElement('span');
+    ownerIcon.classList.add('fa', 'fa-times', 'destroy-dialog-icon');
+    var rmChatroomDialog = event => chatrooms.removeChild(chatroomDialog);
+    ownerIcon.addEventListener('click', rmChatroomDialog);
+
     var input = document.createElement('input');
+    input.classList.add('chatroom-dialog-input');
     input.type = 'text';
     input.placeholder = 'nafn spjallherbergis'
     input.setAttribute('maxlength', '18');
 
-    var button = document.createElement('button');
-    button.textContent = 'con';
-    button.disabled = true;
+    containerSpan.appendChild(usersIcon);
+    // containerSpan.appendChild(title);
+    containerSpan.appendChild(input);
+    chatroomDialogOwner.appendChild(containerSpan);
+    chatroomDialogOwner.appendChild(ownerIcon);
+    chatroomDialog.appendChild(chatroomDialogOwner);
 
-    var chatroom = document.createElement('div');
-    chatroom.classList.add('chatroom-dialog');
-
-    var timeoutID;
-    input.addEventListener('input', function () {
-      button.disabled = true;
-      var value = input.value;
-      if (value.length < 3) return;
-
-      input.dataset.chatroomName = value;
-      clearTimeout(timeoutID);
-      timeoutID = setTimeout(function () {
-        var payload = {
-          newChatroomname: value,
-          makeNewChatroom: false
-        };
-        window.makeRequest(window.HTTP_URL, payload, function (response) {
-          var status = response.status;
-          var name = response.name;
-
-          if (status === 'error') {
-            window.location.replace(window.HTTP_URL);
-          } else if (status === "name in use") {
-            console.log('nafn er ekki í lagi');
-          } else if (status === "name ok") {
-            console.log('nafn er í lagi');
-            button.disabled = false;
-            console.log(input);
-          } else {
-            console.log("Eitthvað hefur farið úrskeiðis");
-          }
-        });
-      }, WAIT_TIME);
-    });
-
-    button.addEventListener('click', function () {
-      input.disabled = true;
-      button.disabled = true;
+    // function sem sendir ajax beiðnir á server með því sem notandi
+    // hefur skrifað í input og athugar hvort það sé löglegt nafn á
+    // spjallherbergi. Ef svo er þá verður button virkur og hægt er
+    // að búa til nýtt herbergi. function-ið býður í WAIT_TIME sekúndur
+    // eftir að notandi hættir að skrifa áður en hann sendir beiðni.
+    //
+    // var timeoutID;
+    // input.addEventListener('input', function () {
+    //   button.disabled = true;
+    //   var value = input.value;
+    //   if (value.length < 3) return;
+    //
+    //   input.dataset.chatroomName = value;
+    //   clearTimeout(timeoutID);
+    //   timeoutID = setTimeout(function () {
+    //     var payload = {
+    //       newChatroomname: value,
+    //       makeNewChatroom: false
+    //     };
+    //     window.makeRequest(window.HTTP_URL, payload, function (response) {
+    //       var status = response.status;
+    //       var name = response.name;
+    //
+    //       if (status === 'error') {
+    //         window.location.replace(window.HTTP_URL);
+    //       } else if (status === "name in use") {
+    //         console.log('nafn er ekki í lagi');
+    //       } else if (status === "name ok") {
+    //         console.log('nafn er í lagi');
+    //         button.disabled = false;
+    //         console.log(input);
+    //       } else {
+    //         console.log("Eitthvað hefur farið úrskeiðis");
+    //       }
+    //     });
+    //   }, WAIT_TIME);
+    // });
+    var errorDiv;
+    input.addEventListener('keydown', function (event) {
+      if (event.keyCode !== 13) return;
       var payload = {
         newChatroomname: input.value,
-        makeNewChatroom: true
       };
       window.makeRequest(HTTP_URL, payload, function (response) {
-        var name = response.name;
-        var owner = response.owner;
-        input.remove();
-        button.remove();
-        chatroom.dataset.name = name;
-        chatroom.dataset.owner = owner;
-        chatroom.classList.add('chatroom-dialog-owner');
+        if (errorDiv) errorDiv.remove();
+        var status = response.status;
+        if (status) {
+          errorDiv = document.createElement('div');
+          errorDiv.textContent = status;
+          chatroomDialog.appendChild(errorDiv);
+        } else {
+          input.remove();
+          var name = response.name;
+          chatroomDialog.dataset.name = name;
+          chatroomDialog.dataset.owner = response.owner;
 
-        var span = document.createElement('div');
-        span.textContent = name;
-        span.classList.add('chatroom-dialog-title')
-        chatroom.appendChild(span);
-        chatroom.addEventListener('click', handleCrDialogClick);
+          ownerIcon.classList.remove('fa-times', 'destroy-dialog-icon');
+          ownerIcon.classList.add('fa-black-tie');
+          ownerIcon.removeEventListener('click', rmChatroomDialog);
+
+          var title = document.createElement('span');
+          title.classList.add('chatroom-dialog-title');
+          title.textContent = name;
+
+          containerSpan.appendChild(title);
+          chatroomDialog.addEventListener('click', handleCrDialogClick);
+        }
       });
     });
 
-    chatroom.appendChild(input);
-    chatroom.appendChild(button);
-    chatrooms.appendChild(chatroom);
+    chatrooms.insertBefore(chatroomDialog, chatrooms.lastChild);
     input.focus();
   }
 
@@ -94,8 +123,6 @@
   }
 
   function createChatroom(chatroom) {
-    console.log(chatroom.owner);
-
     var chatWindowContainer = document.createElement('div');
     chatWindowContainer.classList.add('chat-window-container');
 
@@ -145,7 +172,6 @@
   }
 
   function createOptionsMenu(chatroom) {
-    console.log(chatroom.name);
     var menu = document.createElement('div');
     menu.classList.add('chat-options-menu');
 
@@ -182,6 +208,13 @@
     menu.appendChild(input);
     menu.appendChild(buttonDiv);
     menu.style.display = 'none';
+
+    document.body.onclick = function (event) {
+      var menu = document.querySelector('.chat-options-menu');
+      if (!menu) return;
+      if (event.target === menu) menu.style.display = 'none';
+    }
+
     return menu;
   }
 

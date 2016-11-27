@@ -26,10 +26,13 @@ exports.initWebSocketServer = function(server) {
           dbHelper.messagesOfChatroom(cr, crOwner, function (err, result) {
             var rows = result.rows;
             rows.forEach(function (row) {
+              console.log(row);
               var reply = {
                 sender: row.sender,
                 recipient: user.name,
-                content: row.content
+                content: row.content,
+                date: row.date_of_send,
+                gravatar: row.gravatar
               }
               ws.send(JSON.stringify(reply));
             });
@@ -40,7 +43,6 @@ exports.initWebSocketServer = function(server) {
 
           dbHelper.usersOfChatroom(cr, crOwner, function (err, result) {
             var rows = result.rows;
-            console.log(rows);
             rows.forEach(function (row) {
               var client = ACTIVE_USERS[row.chatuser];
               if (client) {
@@ -49,7 +51,9 @@ exports.initWebSocketServer = function(server) {
                   var reply = {
                     sender: user.name,
                     recipient: row.chatuser,
-                    content: msg.content
+                    content: msg.content,
+                    date: msg.date,
+                    gravatar: user.gravatar
                   }
                   client.socket.send(JSON.stringify(reply));
                 }

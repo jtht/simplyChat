@@ -1,13 +1,14 @@
--- DROP DATABASE IF EXISTS puppies;
--- CREATE DATABASE puppies;
---
--- \c puppies;
+DROP DATABASE IF EXISTS puppies;
+CREATE DATABASE puppies;
+
+\c puppies;
 
 CREATE TABLE chatuser (
     name VARCHAR PRIMARY KEY,
     email VARCHAR,
     passwordHash VARCHAR,
-    sessionID VARCHAR
+    sessionID VARCHAR,
+    gravatar VARCHAR default 'https://s.gravatar.com/avatar/?s=100&r=x&d=retro'
 );
 
 CREATE TABLE chatroom (
@@ -22,6 +23,7 @@ CREATE TABLE chatmessage (
     sender VARCHAR,
     chatroom VARCHAR,
     chatroom_owner VARCHAR,
+    date_of_send VARCHAR,
     FOREIGN KEY (sender) REFERENCES chatuser (name),
     FOREIGN KEY(chatroom, chatroom_owner) REFERENCES chatroom (name, owner)
 );

@@ -15,18 +15,23 @@ handleErr = function (err) {
 }
 
 DBHelper.prototype.insertMessage = function (msg) {
-  pool.query("insert into " + TABLE_CHAT_MESSAGE + " values ($1, $2, $3, $4)",
-         [msg.content, msg.sender, msg.chatroom, msg.chatroom_owner], handleErr);
+  pool.query("insert into " + TABLE_CHAT_MESSAGE + " values ($1, $2, $3, $4, $5)",
+         [msg.content, msg.sender, msg.chatroom, msg.chatroom_owner, msg.date], handleErr);
 }
 
 DBHelper.prototype.insertUser = function (user) {
-  pool.query("insert into " + TABLE_USER + " values ($1, $2, $3, $4)",
-         [user.name, user.email, user.passwordHash, user.sessionID], handleErr);
+  pool.query("insert into " + TABLE_USER + " values ($1, $2, $3, $4, $5)",
+         [user.name, user.email, user.passwordHash, user.sessionID, user.gravatar], handleErr);
 }
 
 DBHelper.prototype.updateSessionID = function (username, sessionID, cb) {
   pool.query("update " + TABLE_USER + " set sessionID = $1 where name = $2",
          [sessionID, username], cb);
+}
+
+DBHelper.prototype.updateGravatar = function (username, gravatar, cb) {
+  pool.query("update " + TABLE_USER + " set gravatar = $1 where name = $2",
+         [gravatar, username], cb);
 }
 
 DBHelper.prototype.clearSessionID = function (sessionID) {
@@ -61,8 +66,10 @@ DBHelper.prototype.usersOfChatroom = function (chatroom, chatroom_owner, callbac
 }
 
 DBHelper.prototype.messagesOfChatroom = function (chatroom, chatroom_owner, callback) {
-  pool.query("select content, sender from " + TABLE_CHAT_MESSAGE + " where " +
-             "chatroom = $1 and chatroom_owner = $2",
+  pool.query("select content, sender, date_of_send, gravatar from " +
+             "(select * from chatmessage " + TABLE_CHAT_MESSAGE + " " +
+             "where chatroom = $1 and chatroom_owner = $2)t " +
+             "join chatuser on t.sender = chatuser.name order by date_of_send",
              [chatroom, chatroom_owner], callback);
 };
 
@@ -90,5 +97,4 @@ DBHelper.prototype.userBySessionID = function (sessionID, callback) {
   pool.query('select * from ' + TABLE_USER + ' where sessionID = $1',
              [sessionID], callback);
 };
-
 module.exports = DBHelper;

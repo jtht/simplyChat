@@ -2,26 +2,35 @@ extends layout
 
 block css
   link(href="https://fonts.googleapis.com/css?family=Raleway", rel="stylesheet")
+  link(href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600", rel="stylesheet")
   link(rel='stylesheet', href='/stylesheets/styleChat.css')
+  link(rel='stylesheet', href='/fonts/font-awesome-4.7.0/css/font-awesome.min.css')
 
 block content
   .body-container
     header
-      nav
-    main
-      .chatroom-dialogs-container#chatroom-dialogs-container
-        button.add-chatroom-dialog.round-button#add-chatroom-dialog bæta við spjallherbergi
-        each val in rows
-          if val.chatuser === val.chatroom_owner
-            .chatroom-dialog.chatroom-dialog-owner(data-name=val.chatroom, data-owner=val.chatroom_owner)
-              .chatroom-dialog-title=val.chatroom
-          else
-            .chatroom-dialog.chatroom-dialog-user(data-name=val.chatroom, data-owner=val.chatroom_owner)
-              .chatroom-dialog-title=val.chatroom
-      #chat-container.chat-container
-    footer
       a#logout-anchor(href="#")
         | Útskráning
+    main
+      .chatroom-dialogs-container#chatroom-dialogs-container
+        .dialogs-container-title.fit-in-dialogs-container Spjallherbergi
+          //button.add-chatroom-dialog.round-button#add-chatroom-dialog
+        each val in rows
+          if val.chatuser === val.chatroom_owner
+            .chatroom-dialog.fit-in-dialogs-container(data-name=val.chatroom, data-owner=val.chatroom_owner)
+              .chatroom-dialog-owner
+                span
+                  i.fa.fa-users.dialog-icon
+                  span.chatroom-dialog-title=val.chatroom
+                span.fa.fa-black-tie
+          else
+            .chatroom-dialog.chatroom-dialog-user.fit-in-dialogs-container(data-name=val.chatroom, data-owner=val.chatroom_owner)
+              i.fa.fa-users.dialog-icon
+              span.chatroom-dialog-title=val.chatroom
+        .add-chatroom-dialog#add-chatroom-dialog.fit-in-dialogs-container
+          i.fa.fa-plus.dialog-icon
+          span Nýtt herbergi
+      #chat-container.chat-container
 
 block scripts
   script(src="/scripts/logoutHandler.js")

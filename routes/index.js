@@ -12,6 +12,22 @@ router.get('/', function (req, res, next) {
     var dbHelper = new DBHelper();
     dbHelper.chatroomsOfUser(username, function (err, result) {
       var rows = result.rows;
+      var oRows = [];
+      var uRows = [];
+      for (row of rows) {
+        if (row.chatuser === row.chatroom_owner) oRows.push(row);
+        else uRows.push(row);
+      }
+
+      function cmp(a, b) {
+        if (a.chatroom < b.chatroom) return -1;
+        if (a.chatroom > b.chatroom) return 1;
+        return 0;
+      }
+
+      oRows.sort(cmp);
+      uRows.sort(cmp);
+      rows = oRows.concat(uRows);
       res.render('chat', {rows: rows});
     });
   }, next);
@@ -30,16 +46,20 @@ router.post('/', function (req, res, next) {
 
     // Býr til nýtt spjallherbergi ef svo ber við
     var crName = req.body.newChatroomname;
-    if (crName && crName.length > 3 && crName.length <= 18) {
-      var shouldMakeCr = req.body.makeNewChatroom;
+    if (crName) {
       response.name = crName;
-
-      dbHelper.chatroomsOfOwner(owner, function (err, result) {
-        var rows = result.rows;
-        var chatroom = rows.find( o => o.name === crName)
-        if (!chatroom) {
-          if (shouldMakeCr) {
-            response.status = "chatroom created";
+      if (crName.length < 3) {
+        response.status = 'Heiti of stutt (minnst 3)';
+        res.json(response);
+      } else if (crName.length > 18) {
+        response.status = 'Heiti of langt (mest 18)'
+        res.json(response);
+      } else {
+        dbHelper.chatroomsOfOwner(owner, function (err, result) {
+          var rows = result.rows;
+          var chatroom = rows.find( o => o.name === crName)
+          if (!chatroom) {
+            response.status = "";
             response.owner = owner;
             var newChatroom = {
               name: crName,
@@ -47,13 +67,11 @@ router.post('/', function (req, res, next) {
             };
             dbHelper.insertChatroom(newChatroom);
           } else {
-            response.status = "name ok";
+            response.status = "Heiti í notkun"
           }
-        } else {
-          response.status = "name in use"
-        }
-        res.json(response);
-      });
+          res.json(response);
+        });
+      }
     } else {
       // Bætir notanda við spjallherbergi
       var chatroomOwner = req.body.owner;
@@ -61,7 +79,7 @@ router.post('/', function (req, res, next) {
       var userToAdd = req.body.user;
 
       if (chatroomOwner !== owner) {
-        response.status = 'Einhver er að reyna að hakka!';
+        response.status = 'Heiti of stutt (minnst 3)';
         res.json(response);
         return;
       }
