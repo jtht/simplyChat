@@ -28,7 +28,7 @@ router.get('/', function (req, res, next) {
       oRows.sort(cmp);
       uRows.sort(cmp);
       rows = oRows.concat(uRows);
-      res.render('chat', {rows: rows});
+      res.render('chat', {rows: rows, username: username});
     });
   }, next);
 });

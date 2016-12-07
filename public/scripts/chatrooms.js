@@ -1,8 +1,6 @@
 //
 var valmynd;
 (function () {
-  var WAIT_TIME = 800;
-
   var chatrooms = document.getElementById('chatroom-dialogs-container');
   var addCrDialogButton = document.getElementById('add-chatroom-dialog');
   var chatContainer = document.getElementById('chat-container');
@@ -108,6 +106,7 @@ var valmynd;
 
           containerSpan.appendChild(title);
           chatroomDialog.addEventListener('click', handleCrDialogClick);
+          chatRoomDialog.dataset.selected = false;
         }
       });
     });
@@ -119,6 +118,13 @@ var valmynd;
   var ws;
   function handleCrDialogClick(event) {
     var chatroom = event.currentTarget;
+    if (chatroom.dataset.selected === "true") return;
+    chatrooms.querySelectorAll('.chatroom-dialog').forEach( cr => {
+      cr.classList.remove('chatroom-dialog-selected');
+      cr.dataset.selected = "false";
+    });
+    chatroom.classList.add('chatroom-dialog-selected');
+    chatroom.dataset.selected = "true";
     deleteChatroom();
     createChatroom(chatroom.dataset);
     window.activateMessaging(ws);
@@ -241,5 +247,6 @@ var valmynd;
 
   chatrooms.querySelectorAll('.chatroom-dialog').forEach(function (div) {
     div.addEventListener('click', handleCrDialogClick);
+    div.dataset.selected = false;
   });
 })();

@@ -52,7 +52,16 @@ a:hover, a:focus {
 }
 
 .email-notification {
-  padding: 5px;
+  padding-top: 5px;
+  padding-left: 10px;
+  line-height: 1.05em;
+  font-size: 0.9em;
+  color: #808080;
+}
+
+.email-notification::before {
+  content: '*';
+  color: black;
 }
 
 @media all and (max-width: 600px) {

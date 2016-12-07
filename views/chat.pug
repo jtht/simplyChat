@@ -9,8 +9,12 @@ block css
 block content
   .body-container
     header
-      a#logout-anchor(href="#")
-        | Útskráning
+      .header-container
+        h2.header-title Velkomin/n #{username}
+        .logout-container
+          i.fa.fa-sign-out
+          a#logout-anchor(href="#")
+            | Útskráning
     main
       .chatroom-dialogs-container#chatroom-dialogs-container
         .dialogs-container-title.fit-in-dialogs-container Spjallherbergi
