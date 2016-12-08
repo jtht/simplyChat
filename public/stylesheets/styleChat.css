@@ -255,6 +255,21 @@ main {
   overflow-x: scroll;
 }
 
+.date-seperator-container {
+  border-bottom: 1px solid #cecece;
+  color: #888888;
+  margin: 10px 15px;
+  line-height: 0;
+  text-align: center;
+}
+
+.date-seperator {
+  margin-top: 2px;
+  padding: 0 10px;
+  background-color: white;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
 .chat-message-line-container {
   background-color: #E8F9FF;
   padding: 0 1.5%;

@@ -52,17 +52,37 @@
     msgLine.appendChild(msgContentContainer);
 
     var lastMsgContainer = msgDisplay.lastChild;
-    var delta, isSameSender;
+    var delta, isSameSender, sameDay;
     if (lastMsgContainer) {
       lastMsg = lastMsgContainer.lastChild;
-      delta = parseInt(reply.date) - parseInt(lastMsg.dataset.date);
+      var replyTime = parseInt(reply.date);
+      var lastMsgTime = parseInt(lastMsg.dataset.date);
+      delta = replyTime - lastMsgTime;
       isSameSender = lastMsg.dataset.sender === reply.sender;
+
+      var replyDate = new Date(replyTime);
+      var lastMsgDate = new Date(lastMsgTime);
+      var sameDay = replyDate.getDay() === lastMsgDate.getDay() &&
+                    replyDate.getMonth() === lastMsgDate.getMonth() &&
+                    replyDate.getDate() === lastMsgDate.getDate() &&
+                    replyDate.getFullYear() === lastMsgDate.getFullYear();
     }
 
-    if (delta <= 30000 && isSameSender) {
+    if (delta <= 30000 && isSameSender && sameDay) {
       msgLine.classList.add('no-avatar');
       lastMsgContainer.appendChild(msgLine);
     } else {
+      if (!sameDay) {
+        var dagsetning = new window.Dagsetning(parseInt(reply.date));
+
+        var dateSeperatorContainer = document.createElement('div');
+        dateSeperatorContainer.classList.add('date-seperator-container');
+        var dateSeperator = document.createElement('span');
+        dateSeperator.classList.add('date-seperator');
+        dateSeperator.textContent = dagsetning + '';
+        dateSeperatorContainer.appendChild(dateSeperator);
+        msgDisplay.appendChild(dateSeperatorContainer);
+      }
       var avatarContainer = document.createElement('div');
       avatarContainer.classList.add('avatar-container');
       avatarContainer.style.background = 'url("' + reply.gravatar + '")';
