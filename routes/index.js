@@ -33,7 +33,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Simply Chat' });
+  res.render('index', { title: 'Bara Spjall' });
 });
 
 router.post('/', function (req, res, next) {

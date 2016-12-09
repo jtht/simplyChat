@@ -1,13 +1,19 @@
 extends layout
 
 block css
+  link(href="https://fonts.googleapis.com/css?family=Cinzel+Decorative", rel="stylesheet")
   link(rel='stylesheet', href='/stylesheets/styleIndex.css')
 
 block content
-  h1= title
-  p Velkominn á #{title}
-  a(href="#", data-toggle="modal", data-target="#myModal")
-    | Ný- og Innskráning
+  .logo-container
+    .logo
+    .logo-info
+      | Velkominn á Bara Spjall. Vefurinn er hannaður til að vera einfaldur og þægilegur í notkun.
+      | Þú býrð einfaldlega til aðgang, svo spjallherbergi og býður þeim notendum sem þú vilt
+      | tala við í herbergið og bara spjallar. Hægt er að ný- eða innskrá sig hér fyrir neðan.
+    .login-container
+      a(href="#", data-toggle="modal", data-target="#myModal")
+        | Ný- og Innskráning
   div(class="modal fade", id="myModal", tabindex="-1", role="dialog")
     div(class="modal-dialog", role="document")
       div(class="modal-content")
