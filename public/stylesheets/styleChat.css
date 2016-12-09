@@ -147,16 +147,16 @@ main {
 .round-button {
   background-color: white;
   color: #00BFFF;
-  border: 2px solid #FFFFFF;
+  border: 1px solid #FFFFFF;
   display: block;
   border-radius: 100%;
-  transition: border 1.5s, color 1.5s;
+  transition: border 1s, color 1s;
   transition-timing-function: ease-in-out;
 }
 
 .round-button:hover, .round-button.border {
-  border: 2px solid #009DD1;
-  color: #009DD1;
+  border: 1px solid #2472ad;
+  color: #2472ad;
 }
 
 .round-button:focus {
@@ -201,21 +201,21 @@ main {
   height: 40px;
   background: url('/images/add_user.jpg') no-repeat;
   background-size: 60px;
-  background-position: -12px -12px;
+  background-position: -11px -12px;
 }
 
 .chat-options-menu {
   position: absolute;
-  right: 0;
-  top: 53px;
+  right: -1px;
+  top: 52px;
 }
 
 .chat-options-info {
   text-align: center;
-  margin: 0px 0 8px 0;
+  margin-bottom: 2px;
   text-transform: capitalize;
   font-weight: 600;
-  color: white;
+  color: #F5F5F5;
 }
 
 .error {
@@ -356,7 +356,7 @@ main {
 
 .arrow_box {
 	position: relative;
-	background: #009DD1;
+	background: #2472ad;
 	border: 1px solid #c2e1f5;
 }
 .arrow_box:after, .arrow_box:before {
@@ -372,7 +372,7 @@ main {
 
 .arrow_box:after {
 	border-color: rgba(0, 157, 209, 0);
-	border-bottom-color: #009DD1;
+	border-bottom-color: #2472ad;
 	border-width: 10px;
 	margin-left: -10px;
 }
@@ -390,17 +390,17 @@ main {
 .chat-options-menu-button {
   background-color: white;
   border: 1px solid #ccc;
-  color: #009dd1;
+  color: #2472ad;
   font-size: 13px;
   font-weight: 600;
 }
 
 .chat-options-menu-button:hover {
   background-color: #e6e6e6;
-  color: #009dd1;
+  color: #2472ad;
   border-color: #adadad;
 }
 
 .chat-options-menu-button:visited,  .chat-options-menu-button:focus{
-  color: #009dd1;
+  color: #2472ad;
 }

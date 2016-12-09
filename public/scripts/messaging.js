@@ -13,7 +13,6 @@
     return cookieVal;
   }
 
-
   function assembleMsg() {
     var input = document.getElementById('chat-message-input');
     var msg = {
@@ -46,7 +45,7 @@
 
     var msgContent = document.createElement('div');
     msgContent.classList.add('chat-message-content');
-    msgContent.textContent = reply.content;
+    msgContent.innerHTML = window.parseLinks(reply.content);
 
     msgContentContainer.appendChild(msgContent);
     msgLine.appendChild(msgContentContainer);

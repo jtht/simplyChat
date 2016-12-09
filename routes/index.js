@@ -6,7 +6,6 @@ var validation = require('../validation');
 
 router.get('/', validation.logoutUser);
 router.get('/', function (req, res, next) {
-  console.log(req.cookies.sessionID);
   validation.userLoggedIn(req.cookies, function (row) {
     var username = row.name;
     var dbHelper = new DBHelper();

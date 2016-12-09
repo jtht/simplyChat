@@ -1,5 +1,3 @@
-//
-var valmynd;
 (function () {
   var chatrooms = document.getElementById('chatroom-dialogs-container');
   var addCrDialogButton = document.getElementById('add-chatroom-dialog');
