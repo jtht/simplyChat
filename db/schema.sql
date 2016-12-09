@@ -1,8 +1,3 @@
-DROP DATABASE IF EXISTS puppies;
-CREATE DATABASE puppies;
-
-\c puppies;
-
 CREATE TABLE chatuser (
     name VARCHAR PRIMARY KEY,
     email VARCHAR,

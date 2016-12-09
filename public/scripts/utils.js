@@ -30,6 +30,6 @@
     request.send(JSON.stringify(payload));
   }
 
-  setHost(LOCAL);
+  setHost(REMOTE);
   window.makeRequest = makeRequest;
 })(window);
