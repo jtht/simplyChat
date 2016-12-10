@@ -1,3 +1,7 @@
+/**
+ * Tengir login form við server og vinnur úr niðurstöðum (sýnir villur etc.)
+ */
+
 (function () {
   function setListeners(button, form) {
     button.addEventListener('click', function (event) {

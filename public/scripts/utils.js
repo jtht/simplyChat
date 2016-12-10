@@ -1,7 +1,12 @@
+/**
+ * Ýmis hjálparföll
+ */
+
 (function (window) {
   var LOCAL = 'local';
   var REMOTE = 'remote';
 
+  // skiptir um stillingar fyrir heroku eða localhost
   function setHost(loc) {
     var REMOTE_DOMAIN = 'desolate-citadel-11212.herokuapp.com/';
     var REMOTE_HTTP = 'https://' + REMOTE_DOMAIN;
@@ -11,10 +16,11 @@
     var LOCAL_HTTP = 'http://' + LOCAL_DOMAIN;
     var LOCAL_WS = 'ws://' + LOCAL_DOMAIN;
 
-    window.HTTP_URL = REMOTE_HTTP //loc === LOCAL ? LOCAL_HTTP : REMOTE_HTTP;
-    window.WS_URL = REMOTE_WS // loc === LOCAL ? LOCAL_WS : LOCAL_WS;
+    window.HTTP_URL = loc === LOCAL ? LOCAL_HTTP : REMOTE_HTTP;
+    window.WS_URL = loc === LOCAL ? LOCAL_WS : LOCAL_WS;
   }
 
+  // ajax request sem sendir og tekur við JSON gögnum
   function makeRequest(url, payload, handleResponse) {
     var request = new XMLHttpRequest();
     request.onload = function() {
@@ -30,6 +36,6 @@
     request.send(JSON.stringify(payload));
   }
 
-  setHost(REMOTE);
+  setHost(LOCAL);
   window.makeRequest = makeRequest;
 })(window);

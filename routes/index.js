@@ -1,16 +1,31 @@
+/**
+ * Bara spjall er einnar síðu app og því er allt routing og öll
+ * tilfelli sem koma upp á höndluð hér
+ */
+
 var express = require('express');
 var router = express.Router();
 var DBHelper = require('../db/DBHelper')
 
-var validation = require('../validation');
+var validation = require('../model/validation');
 
+// Fyrsta middleware. Athugar hvort notandi hafi skráð sig út og
+// sendir hann þá á frontpage
 router.get('/', validation.logoutUser);
+
+// Athugar hvort notandi sé skráður inn og afgreiðir request hans.
+// Þegar notandi er loggaður inn og sendir get request fær hann
+// skjá með spjallherbergjum sem hann á/er notandi í.
 router.get('/', function (req, res, next) {
   validation.userLoggedIn(req.cookies, function (row) {
     var username = row.name;
     var dbHelper = new DBHelper();
     dbHelper.chatroomsOfUser(username, function (err, result) {
       var rows = result.rows;
+
+      // sorterar spjallherbergi notanda þannig að fyrst koma herbergi
+      // sem hann á í stafrófsröð og svo herbergi þar sem hann er bara
+      // notandi í stafrófsröð
       var oRows = [];
       var uRows = [];
       for (row of rows) {
@@ -18,6 +33,9 @@ router.get('/', function (req, res, next) {
         else uRows.push(row);
       }
 
+      // hægt að gera með flóknar compare function en þetta lá betur
+      // við og hefur lægra flækjustig (en ekki lægri keyrsltíma í
+      // raunveruleikanum:/)
       function cmp(a, b) {
         if (a.chatroom < b.chatroom) return -1;
         if (a.chatroom > b.chatroom) return 1;
@@ -27,15 +45,20 @@ router.get('/', function (req, res, next) {
       oRows.sort(cmp);
       uRows.sort(cmp);
       rows = oRows.concat(uRows);
+
       res.render('chat', {rows: rows, username: username});
     });
   }, next);
 });
 
+// Notandi er ekki skráður inn, renderar frontpage
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Bara Spjall' });
 });
 
+// Höndlar post request þegar notandi er loggaður inn. Þá er hann
+// annaðhvort að búa til spjallherbergi eða að skrá notanda í
+// spjallherbergi
 router.post('/', function (req, res, next) {
   // passar að notandi sé loggaður inn
   validation.userLoggedIn(req.cookies, function (row) {
@@ -111,6 +134,7 @@ router.post('/', function (req, res, next) {
   }, next);
 });
 
+// Höndlar þegar notandi skráir sig inn eða nýskráir sig
 router.post('/', function (req, res, next) {
   validation.verifyUser(req.body, res);
 });

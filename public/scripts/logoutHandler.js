@@ -1,3 +1,7 @@
+/**
+ * Höndlar þegar notandi skráir sig út
+ */
+
 (function () {
   var logout = document.getElementById('logout-anchor');
 

@@ -1,3 +1,8 @@
+/**
+ * Tekur inn unix timestamp og breytir því í íslenska dagsetningu
+ * fyrir spjallið
+ */
+
 (function() {
   var DAGAR = [
     'Sunnudagur',

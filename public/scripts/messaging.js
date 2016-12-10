@@ -1,4 +1,11 @@
+/**
+ * messaging.js gerir sér um ws tenginguna við serverinn, bæði að senda
+ * og taka á móti skilaboðum og svo sýna notanda skilaboðinn í spjalli
+ */
+
 (function (window) {
+
+  // tekur inn heiti á cookie og skilar gildi þess
   function readCookie(name) {
   	var name = name + "=";
   	var cookies = document.cookie.split(';');
@@ -13,6 +20,7 @@
     return cookieVal;
   }
 
+  // býr til skilaboð sem senda á ws server
   function assembleMsg() {
     var input = document.getElementById('chat-message-input');
     var msg = {
@@ -26,6 +34,7 @@
     return msg;
   }
 
+  // Gerir skilaboð hugguleg í útliti og setur þau í spjallið
   function addReplyToChat(reply) {
     var msgDisplay = document.getElementById('chat-window');
 
@@ -36,6 +45,9 @@
     msgLine.classList.add('chat-message-line')
     msgLine.dataset.sender = reply.sender;
     msgLine.dataset.date = reply.date;
+
+    // gerir greinarmun útlitslega á skilaboðum notanda og sem hann
+    // fær send
     if (reply.sender !== reply.recipient) {
       msgLineContainer.classList.add('not-sender');
     }
@@ -50,6 +62,9 @@
     msgContentContainer.appendChild(msgContent);
     msgLine.appendChild(msgContentContainer);
 
+    // Flokkar skilaboð sem notandi hefur sent óslitið og innan
+    // 30 sek. frá hvort öðru í einn kassa. Skiptir líka spjallinu
+    // upp eftir dagsetningu.
     var lastMsgContainer = msgDisplay.lastChild;
     var delta, isSameSender, sameDay;
     if (lastMsgContainer) {
@@ -109,6 +124,7 @@
     msgDisplay.scrollTop = msgDisplay.scrollHeight - msgDisplay.clientHeight;
   }
 
+  // tengir spjallherbergi við ws server
   function activateMessaging(ws) {
     if (ws) ws.close();
     ws = new WebSocket(window.WS_URL);

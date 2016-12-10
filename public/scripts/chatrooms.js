@@ -1,3 +1,7 @@
+/**
+ * Býr til chatroom og chatroom dialoga þegar svo ber við
+ */
+
 (function () {
   var chatrooms = document.getElementById('chatroom-dialogs-container');
   var addCrDialogButton = document.getElementById('add-chatroom-dialog');
@@ -7,6 +11,9 @@
     createChatroomDialog();
   });
 
+
+  // Býr til chatroom dialog. Það er litli hnappurinn sem hefur heiti
+  // spjallherbergis og opnar spjallherbergi þegar þrýst er á hann
   function createChatroomDialog(input) {
     var chatroomDialog = document.createElement('div');
     chatroomDialog.classList.add('chatroom-dialog', 'fit-in-dialogs-container');
@@ -74,6 +81,10 @@
     //     });
     //   }, WAIT_TIME);
     // });
+
+    // Athugar hvort nafn crDialog sé löglegt og bætir honum þá við
+    // ef svo er annars þarf notandi að slá inn annað nafna eða loka
+    // dialog
     var errorDiv;
     input.addEventListener('keydown', function (event) {
       if (event.keyCode !== 13) return;
@@ -113,6 +124,9 @@
     input.focus();
   }
 
+  // handlerinn fyrir þegar ýtt er á chatroom dialog. Þá er gamla
+  // spjallherbergi fleygt og nýtt spjallherbergi búið til og
+  // tengt við ws serverinn
   var ws;
   function handleCrDialogClick(event) {
     var chatroom = event.currentTarget;
@@ -128,6 +142,7 @@
     window.activateMessaging(ws);
   }
 
+  // Býr til chatroomið
   function createChatroom(chatroom) {
     var chatWindowContainer = document.createElement('div');
     chatWindowContainer.classList.add('chat-window-container');
@@ -180,6 +195,7 @@
     input.focus();
   }
 
+  // Býr til valmyndina til að bæta við nýjum notanda í spjallherbergi
   function createOptionsMenu(chatroom, optionAddUser) {
     var menu = document.createElement('div');
     menu.classList.add('chat-options-menu');
@@ -225,6 +241,7 @@
     menu.appendChild(menuContainer);
     menu.style.display = 'none';
 
+    // sér um að loka valmynd ef smellt er annarstaðar en á hana
     var insideMenu = false;
     menu.addEventListener('mouseenter', event => insideMenu = true);
     menu.addEventListener('mouseleave', event => insideMenu = false);
@@ -238,11 +255,14 @@
     return menu;
   }
 
+  // fleygir chatroomi
   function deleteChatroom() {
     var chatWindowContainer = document.querySelector('.chat-window-container');
     if (chatWindowContainer) chatContainer.removeChild(chatWindowContainer);
   }
 
+  // bætir við handler fyrir click á dialoga sem var bætt við
+  // server-side
   chatrooms.querySelectorAll('.chatroom-dialog').forEach(function (div) {
     div.addEventListener('click', handleCrDialogClick);
     div.dataset.selected = false;

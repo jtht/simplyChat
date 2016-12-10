@@ -1,3 +1,5 @@
+// parsar linka í spjallinu og býr til tengil sem það setur inn í spjallið
+
 (function () {
   // Einföld regex, með vankanta, til að finna url í skilaboðum.
   // Finnur url með lögleg domain og top-domain. Path og query þurfa

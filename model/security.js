@@ -1,3 +1,8 @@
+/**
+ * security.js er með utility föll fyrir öryggis tengd atriði appsins
+ * svo sem að hasha lykilorð og búa til session id
+ */
+
 const crypto = require('crypto');
 // fjöldi bæta í salti
 const N_BYTES_SALT = 8;

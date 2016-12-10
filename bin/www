@@ -7,7 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('simplyChat:server');
 var http = require('http');
-const wss = require('../ws-server');
+const wss = require('../ws/ws-server');
 
 /**
  * Get port from environment and store in Express.

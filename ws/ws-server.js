@@ -1,10 +1,16 @@
+/**
+ * Websocket server appsins
+ */
 const cookie = require('cookie');
 const WebSocketServer = require('ws').Server;
-const userLoggedIn = require('./validation').userLoggedIn;
-const DBHelper = require('./db/DBHelper');
+const userLoggedIn = require('../model/validation').userLoggedIn;
+const DBHelper = require('../db/DBHelper');
 
 exports.initWebSocketServer = function(server) {
   var wss = new WebSocketServer({ server: server });
+  // object sem heldur utan um notendur sem eru með lifandi tengingu
+  // við serverinn og hvaða spjallherbergi eru tengdir við. Notað til
+  // að senda þeim skilaboð jafnóðum og þau berast
   var ACTIVE_USERS = {};
   var dbHelper = new DBHelper();
 
@@ -16,6 +22,8 @@ exports.initWebSocketServer = function(server) {
       userLoggedIn(msg, function (user) {
         var cr = msg.chatroom;
         var crOwner = msg.chatroom_owner;
+        // Höndlar tilfellið þegar notandi tengist við spjallherbergi.
+        // Þá þarf að senda honum öll skilaboð herbergisins úr gagnagrunni
         if (msg.newConnection) {
           ws.user = user.name;
           var activeUserInfo = {
@@ -38,6 +46,9 @@ exports.initWebSocketServer = function(server) {
             });
           });
         } else {
+          // Höndlar tilfellið þar sem notandi sendir skilaboð. Þá þarf að
+          // skrifa þau í gagnagrunn og senda til allra notanda sem eru tengdir
+          // við spjallherbergið
           msg.sender = user.name;
           dbHelper.insertMessage(msg);
 

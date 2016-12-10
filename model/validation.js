@@ -1,4 +1,9 @@
-var DBHelper = require('./db/DBHelper');
+/**
+ * validation.js sér um auðkenningu á notendum og að beina þeima á
+ * réttar slóðir eftir því hver niðurstaða þess er.
+ */
+
+var DBHelper = require('../db/DBHelper');
 var security = require('./security');
 var User = require('./User');
 

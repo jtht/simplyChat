@@ -1,5 +1,10 @@
+/**
+ * DBHelper sér um öll samskipti við gagnagrunn. Önnur módul appsins
+ * nota API DBHelper til að CRUDDA gagnagrunn.
+ */
+
 var pg = require('pg');
-var config = require('../remoteDbConfig');
+var config = require('./localDbConfig');
 
 var TABLE_USER = "chatuser";
 var TABLE_CHAT_MESSAGE = "chatmessage";
