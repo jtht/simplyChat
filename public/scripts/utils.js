@@ -11,8 +11,8 @@
     var LOCAL_HTTP = 'http://' + LOCAL_DOMAIN;
     var LOCAL_WS = 'ws://' + LOCAL_DOMAIN;
 
-    window.HTTP_URL = loc === LOCAL ? LOCAL_HTTP : REMOTE_HTTP;
-    window.WS_URL = loc === LOCAL ? LOCAL_WS : LOCAL_WS;
+    window.HTTP_URL = REMOTE_HTTP //loc === LOCAL ? LOCAL_HTTP : REMOTE_HTTP;
+    window.WS_URL = REMOTE_WS // loc === LOCAL ? LOCAL_WS : LOCAL_WS;
   }
 
   function makeRequest(url, payload, handleResponse) {
