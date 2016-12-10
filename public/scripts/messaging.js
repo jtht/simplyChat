@@ -135,6 +135,5 @@
       ws.send(JSON.stringify(msg));
     })
   }
-
   window.activateMessaging = activateMessaging;
 })(window);

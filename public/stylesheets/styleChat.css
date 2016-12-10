@@ -251,7 +251,7 @@ main {
 .chat-window {
   background-color: white;
   min-height: 400px;
-  max-height: 400px;
+  max-height: 450px;
   overflow-x: scroll;
 }
 
